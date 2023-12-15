@@ -39,3 +39,27 @@ SELECT
 FROM maps.sources s
 LEFT JOIN maps_metadata.sources ms
   ON ms.source_id = s.source_id;
+
+/* Triggers to update table every time view is update. They have to be recreated every time you update the view. */
+CREATE OR REPLACE FUNCTION maps_metadata.maps_metadata_update_trigger()
+	RETURNS TRIGGER
+	AS $$
+BEGIN
+	UPDATE
+		maps_metadata.sources
+	SET
+		raster_source_url = NEW.raster_source_url,
+		raster_bucket_url = NEW.raster_bucket_url,
+		compiler_name = NEW.compiler_name,
+		date_compiled = NEW.date_compiled;
+	RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER maps_metadata_update_trigger
+	INSTEAD OF UPDATE ON maps_metadata.sources_meta
+	FOR EACH ROW
+	EXECUTE PROCEDURE maps_metadata.maps_metadata_update_trigger();
+
+
