@@ -51,7 +51,8 @@ BEGIN
 		raster_source_url = NEW.raster_source_url,
 		raster_bucket_url = NEW.raster_bucket_url,
 		compiler_name = NEW.compiler_name,
-		date_compiled = NEW.date_compiled;
+		date_compiled = NEW.date_compiled
+	WHERE source_id = NEW.source_id;
 	RETURN NEW;
 END;
 $$
